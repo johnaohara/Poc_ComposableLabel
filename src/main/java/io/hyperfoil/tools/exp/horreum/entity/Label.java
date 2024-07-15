@@ -22,6 +22,20 @@ import java.util.stream.Collectors;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Label extends PanacheEntity implements Comparable<Label> {
 
+    public Label copy(Test test) {
+        Label copyLabel =  new Label();
+        copyLabel.name = this.name;
+        copyLabel.uri = this.uri; //need to modify for the test
+        copyLabel.parent_uri = this.uri;
+        copyLabel.parent = test;
+        copyLabel.target_schema = this.target_schema;
+        copyLabel.multiType = this.multiType;
+        copyLabel.scalarMethod = this.scalarMethod;
+        copyLabel.parent_uri = this.uri;
+        copyLabel.loadExtractors(this.extractors.stream().map(extractor -> Extractor.fromString(extractor.jsonpath).setName(extractor.name)).toArray(Extractor[]::new));
+        return copyLabel;
+    }
+
     public static enum MultiIterationType { Length, NxN}
     public static enum ScalarVariableMethod { First, All}
 
@@ -39,6 +53,10 @@ public class Label extends PanacheEntity implements Comparable<Label> {
 
     public String target_schema; //using a string to simplify the PoC
 
+//    @NotNull  //disable for now, until we have more strict validation
+    public String uri; //using a string to simplify the PoC
+    public String parent_uri; //using a string to simplify the PoC
+
     @ElementCollection(fetch = FetchType.EAGER)
     @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "parent")
     public List<@NotNull(message="null extractors are not supported") @ValidTarget Extractor> extractors;
@@ -55,10 +73,16 @@ public class Label extends PanacheEntity implements Comparable<Label> {
         this(name,null);
     }
     public Label(String name,Test parent){
+        this(name,null,parent);
+    }
+
+    public Label(String name, String uri, Test parent){
         this.name = name;
         this.parent = parent;
+        this.uri = uri;
         this.extractors = new ArrayList<>();
     }
+
 
     public Label loadExtractors(Extractor...extractors){
         this.extractors = Arrays.asList(extractors);

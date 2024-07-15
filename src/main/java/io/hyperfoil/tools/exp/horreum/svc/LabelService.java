@@ -23,6 +23,11 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 @Produces(APPLICATION_JSON)
 public class LabelService {
 
+    @GET
+    public Label get(long id){
+        return Label.findById(id);
+    }
+
     //adding testId is likely unnecessary but those dashboard requests could lead to cross-test comparisons
     public static record ValueMap(ObjectNode data,long index,long labelId,long runId,long testId){}
 
@@ -254,10 +259,7 @@ public class LabelService {
     }
 
 
-    @GET
-    public Label get(long id){
-        return Label.findById(id);
-    }
+
 
     /*
      * Get all the LabelValues for the given test that target the specific schema.

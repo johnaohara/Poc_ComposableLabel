@@ -6,7 +6,6 @@ import io.hyperfoil.tools.exp.horreum.entity.Label;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,6 +29,17 @@ public class Extractor extends PanacheEntity {
     @JoinColumn(name = "parent_id")
     @JsonIgnore
     public Label parent;
+
+    public Extractor copy(Label copyLabel) {
+        Extractor copy = new Extractor();
+        copy.parent = copyLabel;
+//        copy.targetLabel = copyLabel;
+        copy.name = this.name;
+        copy.type = this.type;
+        copy.jsonpath = this.jsonpath;
+        copy.column_name = this.column_name;
+        return copy;
+    }
 
     public enum Type {PATH, VALUE, METADATA}
 

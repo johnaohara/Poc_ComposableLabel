@@ -31,6 +31,13 @@ public class Test extends PanacheEntity {
         checkLabels();
         return this;
     }
+
+    public void copyLabelSet(String uri){
+        List<LabelSet> labelSet = LabelSet.find("uri", uri).list();
+        labelSet.forEach(labelSet1 -> {
+            this.loadLabels(labelSet1.labels.stream().map(lse -> lse.label.copy(this)).toArray(Label[]::new));
+        });
+    }
     public boolean hasTempLabel(Extractor e){
         return Extractor.Type.VALUE.equals(e.type)
         && (
